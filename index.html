@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>DEMON PENGU</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
 </head>
 <body class="bg-black text-white font-sans">
 
@@ -21,7 +21,7 @@
   <!-- Contenido principal -->
   <div class="max-w-3xl mx-auto p-6 text-center pt-20">
     
-    <img src="demonpengu-logo.png" alt="Demon Pengu Logo" class="w-48 mx-auto mb-6">
+    <img src="demonpengu-logo.png" alt="Demon Pengu Logo" class="w-48 mx-auto mb-6" />
 
     <h1 class="text-5xl font-extrabold text-red-600">DEMON PENGU</h1>
     <p class="text-xl text-gray-300 mt-2">Ticker: <span class="font-mono text-red-400">DEMONPENGU</span></p>
@@ -32,7 +32,7 @@
 
     <!-- Mint y Precio -->
     <div class="mt-6 p-4 bg-gray-800 rounded-lg text-left text-sm">
-      <p><strong>🎯 Mint Address:</strong><br>
+      <p><strong>🎯 Mint Address:</strong><br />
         <span class="break-words text-gray-200">BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM</span>
       </p>
       <p class="mt-2"><strong>💰 Precio actual:</strong> <span id="live-price" class="text-green-400">$0.00</span></p>
@@ -56,74 +56,59 @@
     <!-- Gráfico -->
     <iframe src="https://www.geckoterminal.com/embed/pools/BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM/candles"
         width="100%" height="400" frameborder="0"></iframe>
-    </div>
-
-    <!-- Airdrop -->
-    <div class="mt-10">
-      <button id="claim-airdrop"
-              class="bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-6 py-2 rounded-full transition">
-        🎁 Reclamar Airdrop
-      </button>
-      <p id="airdrop-status" class="mt-2 text-sm text-green-400"></p>
-    </div>
-
-    <!-- Staking -->
-    <div class="mt-10 bg-gray-800 rounded-lg p-4">
-      <h2 class="text-lg font-bold mb-2 text-purple-300">⛓️ Staking DEMONPENGU</h2>
-      <input type="number" id="stake-amount" placeholder="Cantidad" class="p-2 rounded text-black w-1/2">
-      <button id="stake-btn" class="ml-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-white">
-        Stakear
-      </button>
-      <p id="stake-status" class="mt-2 text-sm text-green-400"></p>
-    </div>
-
-    <!-- Footer -->
-    <footer class="mt-10 text-sm text-gray-500">
-      &copy; 2025 Demon Pengu. All rights cursed.
-    </footer>
   </div>
+
+  <!-- Airdrop -->
+  <div class="mt-10">
+    <button id="claim-airdrop"
+            class="bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-6 py-2 rounded-full transition">
+      🎁 Reclamar Airdrop
+    </button>
+    <p id="airdrop-status" class="mt-2 text-sm text-green-400"></p>
+  </div>
+
+  <!-- Staking -->
+  <div class="mt-10 bg-gray-800 rounded-lg p-4">
+    <h2 class="text-lg font-bold mb-2 text-purple-300">⛓️ Staking DEMONPENGU</h2>
+    <input type="number" id="stake-amount" placeholder="Cantidad" class="p-2 rounded text-black w-1/2" />
+    <button id="stake-btn" class="ml-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-white">
+      Stakear
+    </button>
+    <p id="stake-status" class="mt-2 text-sm text-green-400"></p>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-10 text-sm text-gray-500 text-center">
+    &copy; 2025 Demon Pengu. All rights cursed.
+  </footer>
 
   <!-- Scripts -->
   <script>
     const TOKEN_MINT = "BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM";
 
+    const phantomBtn = document.getElementById("phantom-connect");
+    const phantomStatus = document.getElementById("phantom-status");
+    const penguBalance = document.getElementById("pengu-balance");
+    const livePrice = document.getElementById("live-price");
+
+    let connectedPubkey = null;
+
     async function loadPrice() {
       try {
+        livePrice.textContent = "⏳ Cargando precio...";
         const res = await fetch("https://api.geckoterminal.com/api/v2/networks/solana/tokens/" + TOKEN_MINT);
         const data = await res.json();
         const price = data.data.attributes.price_usd;
-        document.getElementById("live-price").textContent = `$${parseFloat(price).toFixed(6)}`;
+        livePrice.textContent = `$${parseFloat(price).toFixed(6)}`;
       } catch (error) {
         console.error("Error al obtener el precio:", error);
-        document.getElementById("live-price").textContent = "N/A";
-      }
-    }
-
-    loadPrice();
-    setInterval(loadPrice, 15000);
-
-    const phantomBtn = document.getElementById("phantom-connect");
-    const phantomStatus = document.getElementById("phantom-status");
-
-    async function connectPhantom() {
-      if (!window.solana || !window.solana.isPhantom) {
-        alert("Phantom Wallet no está instalada. Instálala desde https://phantom.app/");
-        return;
-      }
-
-      try {
-        const res = await window.solana.connect();
-        const pubkey = res.publicKey.toString();
-        phantomBtn.textContent = "✅ Conectado";
-        phantomStatus.textContent = pubkey.slice(0, 4) + "..." + pubkey.slice(-4);
-        getTokenBalance(pubkey);
-      } catch (err) {
-        console.error("Usuario canceló conexión:", err);
+        livePrice.textContent = "N/A";
       }
     }
 
     async function getTokenBalance(pubkey) {
       try {
+        penguBalance.textContent = "⏳ Cargando balance...";
         const res = await fetch(`https://api.mainnet-beta.solana.com`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -138,27 +123,104 @@
             ]
           })
         });
-
         const data = await res.json();
         const account = data.result.value[0];
         const amount = account?.account.data.parsed.info.tokenAmount.uiAmount || 0;
-        document.getElementById("pengu-balance").textContent = `🐧 Balance: ${amount} DEMONPENGU`;
+        penguBalance.textContent = `🐧 Balance: ${amount} DEMONPENGU`;
       } catch (err) {
         console.error("No se pudo obtener el balance:", err);
+        penguBalance.textContent = "❌ Error al cargar balance";
       }
     }
 
-    phantomBtn.addEventListener("click", connectPhantom);
+    async function connectPhantom() {
+      if (!window.solana || !window.solana.isPhantom) {
+        alert("Phantom Wallet no está instalada. Instálala desde https://phantom.app/");
+        return;
+      }
+
+      phantomBtn.disabled = true;
+      phantomBtn.textContent = "⏳ Conectando...";
+
+      try {
+        const res = await window.solana.connect();
+        connectedPubkey = res.publicKey.toString();
+        phantomBtn.textContent = "✅ Conectado (click para desconectar)";
+        phantomBtn.disabled = false;
+        phantomStatus.textContent = connectedPubkey.slice(0, 4) + "..." + connectedPubkey.slice(-4);
+        await getTokenBalance(connectedPubkey);
+      } catch (err) {
+        console.error("Usuario canceló conexión:", err);
+        phantomBtn.textContent = "🔗 Conectar Wallet";
+        phantomBtn.disabled = false;
+        phantomStatus.textContent = "";
+        penguBalance.textContent = "";
+      }
+    }
+
+    async function disconnectPhantom() {
+      if (!window.solana || !window.solana.isPhantom) return;
+
+      try {
+        await window.solana.disconnect();
+      } catch (err) {
+        console.warn("Error al desconectar:", err);
+      }
+
+      connectedPubkey = null;
+      phantomBtn.textContent = "🔗 Conectar Wallet";
+      phantomStatus.textContent = "";
+      penguBalance.textContent = "";
+    }
+
+    phantomBtn.addEventListener("click", async () => {
+      if (connectedPubkey) {
+        // Si ya está conectado, al hacer click desconectamos
+        await disconnectPhantom();
+      } else {
+        await connectPhantom();
+      }
+    });
+
+    // Manejar cambio de cuenta o desconexión desde Phantom Wallet
+    if (window.solana && window.solana.isPhantom) {
+      window.solana.on("accountChanged", async (publicKey) => {
+        if (publicKey) {
+          connectedPubkey = publicKey.toString();
+          phantomBtn.textContent = "✅ Conectado (click para desconectar)";
+          phantomStatus.textContent = connectedPubkey.slice(0, 4) + "..." + connectedPubkey.slice(-4);
+          await getTokenBalance(connectedPubkey);
+        } else {
+          // wallet desconectada o sin cuenta seleccionada
+          connectedPubkey = null;
+          phantomBtn.textContent = "🔗 Conectar Wallet";
+          phantomStatus.textContent = "";
+          penguBalance.textContent = "";
+        }
+      });
+    }
 
     window.addEventListener("load", async () => {
+      loadPrice();
+      setInterval(loadPrice, 15000);
+
       if (window.solana && window.solana.isPhantom) {
         try {
           const res = await window.solana.connect({ onlyIfTrusted: true });
-          const pubkey = res.publicKey.toString();
-          phantomBtn.textContent = "✅ Conectado";
-          phantomStatus.textContent = pubkey.slice(0, 4) + "..." + pubkey.slice(-4);
-          getTokenBalance(pubkey);
-        } catch (_) {}
+          connectedPubkey = res.publicKey.toString();
+          phantomBtn.textContent = "✅ Conectado (click para desconectar)";
+          phantomStatus.textContent = connectedPubkey.slice(0, 4) + "..." + connectedPubkey.slice(-4);
+          await getTokenBalance(connectedPubkey);
+        } catch (_) {
+          phantomBtn.textContent = "🔗 Conectar Wallet";
+          phantomStatus.textContent = "";
+          penguBalance.textContent = "";
+          connectedPubkey = null;
+        }
+      } else {
+        phantomBtn.textContent = "⚠️ Phantom no detectado";
+        phantomBtn.disabled = true;
+        phantomStatus.textContent = "Por favor instala Phantom Wallet.";
       }
     });
 
