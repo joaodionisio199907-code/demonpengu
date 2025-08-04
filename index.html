@@ -21,14 +21,11 @@
   <!-- Contenido principal -->
   <div class="max-w-3xl mx-auto p-6 text-center pt-20">
     
-    <!-- Logo -->
     <img src="demonpengu-logo.png" alt="Demon Pengu Logo" class="w-48 mx-auto mb-6">
 
-    <!-- Título -->
     <h1 class="text-5xl font-extrabold text-red-600">DEMON PENGU</h1>
     <p class="text-xl text-gray-300 mt-2">Ticker: <span class="font-mono text-red-400">DEMONPENGU</span></p>
 
-    <!-- Descripción -->
     <p class="mt-4 text-lg text-gray-400 italic">
       In the cursed reaches of the Infernal Pole—where fire burns beneath black snow and the sky roars with blood-red auroras—lives a damned species: the Demon Penguins. They weren’t always like this.
     </p>
@@ -41,16 +38,44 @@
       <p class="mt-2"><strong>💰 Precio actual:</strong> <span id="live-price" class="text-green-400">$0.00</span></p>
     </div>
 
-    <!-- Botón de compra -->
+    <!-- Botón comprar -->
     <a href="https://pump.fun/coin/BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM"
        target="_blank"
        class="mt-6 inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-full transition">
       🔥 Comprar en Pump.fun
     </a>
 
-    <!-- Redes sociales -->
+    <!-- Balance -->
+    <p id="pengu-balance" class="mt-4 text-green-300 text-sm"></p>
+
+    <!-- Redes -->
     <div class="mt-8 flex justify-center space-x-6">
       <a href="https://x.com/ElonBeastToken" target="_blank" class="text-blue-400 hover:text-blue-500">Twitter / X</a>
+    </div>
+
+    <!-- Gráfico -->
+    <div class="mt-10">
+      <iframe src="https://www.geckoterminal.com/solana/pools/BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM?embed=1"
+              height="400" width="100%" frameborder="0"></iframe>
+    </div>
+
+    <!-- Airdrop -->
+    <div class="mt-10">
+      <button id="claim-airdrop"
+              class="bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-6 py-2 rounded-full transition">
+        🎁 Reclamar Airdrop
+      </button>
+      <p id="airdrop-status" class="mt-2 text-sm text-green-400"></p>
+    </div>
+
+    <!-- Staking -->
+    <div class="mt-10 bg-gray-800 rounded-lg p-4">
+      <h2 class="text-lg font-bold mb-2 text-purple-300">⛓️ Staking DEMONPENGU</h2>
+      <input type="number" id="stake-amount" placeholder="Cantidad" class="p-2 rounded text-black w-1/2">
+      <button id="stake-btn" class="ml-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-white">
+        Stakear
+      </button>
+      <p id="stake-status" class="mt-2 text-sm text-green-400"></p>
     </div>
 
     <!-- Footer -->
@@ -59,11 +84,13 @@
     </footer>
   </div>
 
-  <!-- Script para precio en vivo -->
+  <!-- Scripts -->
   <script>
+    const TOKEN_MINT = "BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM";
+
     async function loadPrice() {
       try {
-        const res = await fetch("https://api.geckoterminal.com/api/v2/networks/solana/tokens/BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM");
+        const res = await fetch("https://api.geckoterminal.com/api/v2/networks/solana/tokens/" + TOKEN_MINT);
         const data = await res.json();
         const price = data.data.attributes.price_usd;
         document.getElementById("live-price").textContent = `$${parseFloat(price).toFixed(6)}`;
@@ -74,11 +101,8 @@
     }
 
     loadPrice();
-    setInterval(loadPrice, 15000); // actualiza cada 15s
-  </script>
+    setInterval(loadPrice, 15000);
 
-  <!-- Script para conexión con Phantom -->
-  <script>
     const phantomBtn = document.getElementById("phantom-connect");
     const phantomStatus = document.getElementById("phantom-status");
 
@@ -93,8 +117,35 @@
         const pubkey = res.publicKey.toString();
         phantomBtn.textContent = "✅ Conectado";
         phantomStatus.textContent = pubkey.slice(0, 4) + "..." + pubkey.slice(-4);
+        getTokenBalance(pubkey);
       } catch (err) {
         console.error("Usuario canceló conexión:", err);
+      }
+    }
+
+    async function getTokenBalance(pubkey) {
+      try {
+        const res = await fetch(`https://api.mainnet-beta.solana.com`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            id: 1,
+            method: "getTokenAccountsByOwner",
+            params: [
+              pubkey,
+              { mint: TOKEN_MINT },
+              { encoding: "jsonParsed" }
+            ]
+          })
+        });
+
+        const data = await res.json();
+        const account = data.result.value[0];
+        const amount = account?.account.data.parsed.info.tokenAmount.uiAmount || 0;
+        document.getElementById("pengu-balance").textContent = `🐧 Balance: ${amount} DEMONPENGU`;
+      } catch (err) {
+        console.error("No se pudo obtener el balance:", err);
       }
     }
 
@@ -104,14 +155,60 @@
       if (window.solana && window.solana.isPhantom) {
         try {
           const res = await window.solana.connect({ onlyIfTrusted: true });
+          const pubkey = res.publicKey.toString();
           phantomBtn.textContent = "✅ Conectado";
-          phantomStatus.textContent = res.publicKey.toString().slice(0, 4) + "..." + res.publicKey.toString().slice(-4);
+          phantomStatus.textContent = pubkey.slice(0, 4) + "..." + pubkey.slice(-4);
+          getTokenBalance(pubkey);
         } catch (_) {}
       }
+    });
+
+    // Airdrop simulado
+    const claimBtn = document.getElementById("claim-airdrop");
+    const airdropStatus = document.getElementById("airdrop-status");
+
+    claimBtn.addEventListener("click", () => {
+      if (!window.solana?.publicKey) {
+        alert("Conecta tu wallet primero.");
+        return;
+      }
+
+      claimBtn.disabled = true;
+      claimBtn.textContent = "🎁 Reclamando...";
+
+      setTimeout(() => {
+        airdropStatus.textContent = "✅ Airdrop simulado (haz el real en backend luego)";
+        claimBtn.textContent = "🎁 Reclamado";
+      }, 2000);
+    });
+
+    // Staking simulado
+    const stakeBtn = document.getElementById("stake-btn");
+    const stakeAmount = document.getElementById("stake-amount");
+    const stakeStatus = document.getElementById("stake-status");
+
+    stakeBtn.addEventListener("click", () => {
+      const amount = parseFloat(stakeAmount.value);
+      if (!amount || amount <= 0) {
+        stakeStatus.textContent = "❌ Ingresa una cantidad válida.";
+        return;
+      }
+
+      if (!window.solana?.publicKey) {
+        stakeStatus.textContent = "❌ Conecta tu wallet.";
+        return;
+      }
+
+      stakeStatus.textContent = "⏳ Stake simulado: " + amount + " DEMONPENGU";
+      setTimeout(() => {
+        stakeStatus.textContent = `✅ ¡Stake exitoso de ${amount} DEMONPENGU! (simulado)`;
+      }, 2000);
     });
   </script>
 
 </body>
 </html>
+
+
 
 
