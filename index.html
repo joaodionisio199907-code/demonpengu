@@ -7,7 +7,19 @@
   <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-black text-white font-sans">
-  <div class="max-w-3xl mx-auto p-6 text-center">
+
+  <!-- Botón flotante de conexión Phantom -->
+  <div id="phantom-connect-wrapper" class="fixed top-4 right-4 z-50">
+    <button id="phantom-connect"
+            class="bg-gradient-to-r from-purple-700 via-indigo-500 to-blue-500 hover:from-purple-800 hover:to-blue-600
+                   text-white font-semibold px-5 py-2 rounded-full shadow-lg shadow-indigo-900/30 transition duration-300">
+      🔗 Conectar Wallet
+    </button>
+    <p id="phantom-status" class="text-sm text-green-400 mt-1 text-right"></p>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="max-w-3xl mx-auto p-6 text-center pt-20">
     
     <!-- Logo -->
     <img src="demonpengu-logo.png" alt="Demon Pengu Logo" class="w-48 mx-auto mb-6">
@@ -23,7 +35,9 @@
 
     <!-- Mint y Precio -->
     <div class="mt-6 p-4 bg-gray-800 rounded-lg text-left text-sm">
-      <p><strong>🎯 Mint Address:</strong><br><span class="break-words text-gray-200">BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM</span></p>
+      <p><strong>🎯 Mint Address:</strong><br>
+        <span class="break-words text-gray-200">BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM</span>
+      </p>
       <p class="mt-2"><strong>💰 Precio actual:</strong> <span id="live-price" class="text-green-400">$0.00</span></p>
     </div>
 
@@ -62,6 +76,42 @@
     loadPrice();
     setInterval(loadPrice, 15000); // actualiza cada 15s
   </script>
+
+  <!-- Script para conexión con Phantom -->
+  <script>
+    const phantomBtn = document.getElementById("phantom-connect");
+    const phantomStatus = document.getElementById("phantom-status");
+
+    async function connectPhantom() {
+      if (!window.solana || !window.solana.isPhantom) {
+        alert("Phantom Wallet no está instalada. Instálala desde https://phantom.app/");
+        return;
+      }
+
+      try {
+        const res = await window.solana.connect();
+        const pubkey = res.publicKey.toString();
+        phantomBtn.textContent = "✅ Conectado";
+        phantomStatus.textContent = pubkey.slice(0, 4) + "..." + pubkey.slice(-4);
+      } catch (err) {
+        console.error("Usuario canceló conexión:", err);
+      }
+    }
+
+    phantomBtn.addEventListener("click", connectPhantom);
+
+    window.addEventListener("load", async () => {
+      if (window.solana && window.solana.isPhantom) {
+        try {
+          const res = await window.solana.connect({ onlyIfTrusted: true });
+          phantomBtn.textContent = "✅ Conectado";
+          phantomStatus.textContent = res.publicKey.toString().slice(0, 4) + "..." + res.publicKey.toString().slice(-4);
+        } catch (_) {}
+      }
+    });
+  </script>
+
 </body>
 </html>
+
 
