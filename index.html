@@ -8,33 +8,60 @@
 </head>
 <body class="bg-black text-white font-sans">
   <div class="max-w-3xl mx-auto p-6 text-center">
+    
+    <!-- Logo -->
     <img src="demonpengu-logo.png" alt="Demon Pengu Logo" class="w-48 mx-auto mb-6">
 
+    <!-- Título -->
     <h1 class="text-5xl font-extrabold text-red-600">DEMON PENGU</h1>
     <p class="text-xl text-gray-300 mt-2">Ticker: <span class="font-mono text-red-400">DEMONPENGU</span></p>
 
+    <!-- Descripción -->
     <p class="mt-4 text-lg text-gray-400 italic">
       In the cursed reaches of the Infernal Pole—where fire burns beneath black snow and the sky roars with blood-red auroras—lives a damned species: the Demon Penguins. They weren’t always like this.
     </p>
 
+    <!-- Mint y Precio -->
     <div class="mt-6 p-4 bg-gray-800 rounded-lg text-left text-sm">
       <p><strong>🎯 Mint Address:</strong><br><span class="break-words text-gray-200">BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM</span></p>
+      <p class="mt-2"><strong>💰 Precio actual:</strong> <span id="live-price" class="text-green-400">$0.00</span></p>
     </div>
 
+    <!-- Botón de compra -->
     <a href="https://pump.fun/coin/BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM"
        target="_blank"
        class="mt-6 inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-full transition">
-      🔥 Buy on Pump.fun
+      🔥 Comprar en Pump.fun
     </a>
 
+    <!-- Redes sociales -->
     <div class="mt-8 flex justify-center space-x-6">
       <a href="https://x.com/ElonBeastToken" target="_blank" class="text-blue-400 hover:text-blue-500">Twitter / X</a>
-      <!-- Puedes agregar Telegram más tarde si tienes uno -->
     </div>
 
+    <!-- Footer -->
     <footer class="mt-10 text-sm text-gray-500">
       &copy; 2025 Demon Pengu. All rights cursed.
     </footer>
   </div>
+
+  <!-- Script para precio en vivo -->
+  <script>
+    async function loadPrice() {
+      try {
+        const res = await fetch("https://api.geckoterminal.com/api/v2/networks/solana/tokens/BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM");
+        const data = await res.json();
+        const price = data.data.attributes.price_usd;
+        document.getElementById("live-price").textContent = `$${parseFloat(price).toFixed(6)}`;
+      } catch (error) {
+        console.error("Error al obtener el precio:", error);
+        document.getElementById("live-price").textContent = "N/A";
+      }
+    }
+
+    loadPrice();
+    setInterval(loadPrice, 15000); // actualiza cada 15s
+  </script>
 </body>
 </html>
+
