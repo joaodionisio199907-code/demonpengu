@@ -8,6 +8,25 @@
 </head>
 <body class="bg-black text-white font-sans">
 
+  <!-- Navbar -->
+  <nav class="bg-gray-900 shadow-lg fixed top-0 w-full z-50">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center space-x-4">
+          <img src="demonpengu-logo.png" alt="Demon Pengu Logo" class="h-10 w-10 rounded-full" />
+          <span class="text-red-600 text-xl font-extrabold">DEMON PENGU</span>
+        </div>
+        <div class="hidden md:flex space-x-6 text-sm font-semibold">
+          <a href="#home" class="hover:text-red-500 transition">Inicio</a>
+          <a href="https://pump.fun/coin/BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM" target="_blank" class="hover:text-red-500 transition">Comprar</a>
+          <a href="#swap" class="hover:text-red-500 transition">Swap</a>
+          <a href="#staking" class="hover:text-red-500 transition">Staking</a>
+          <a href="https://x.com/ElonBeastToken" target="_blank" class="hover:text-red-500 transition">Twitter</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
   <!-- Botón flotante de conexión Phantom -->
   <div id="phantom-connect-wrapper" class="fixed top-4 right-4 z-50">
     <button id="phantom-connect"
@@ -19,9 +38,7 @@
   </div>
 
   <!-- Contenido principal -->
-  <div class="max-w-3xl mx-auto p-6 text-center pt-20">
-    
-    <img src="demonpengu-logo.png" alt="Demon Pengu Logo" class="w-48 mx-auto mb-6" />
+  <div id="home" class="max-w-3xl mx-auto p-6 text-center pt-28">
 
     <h1 class="text-5xl font-extrabold text-red-600">DEMON PENGU</h1>
     <p class="text-xl text-gray-300 mt-2">Ticker: <span class="font-mono text-red-400">DEMONPENGU</span></p>
@@ -44,46 +61,38 @@
        class="mt-6 inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-full transition">
       🔥 Comprar en Pump.fun
     </a>
-<!-- Swap Integrado -->
-<div class="mt-10 bg-gray-800 p-4 rounded-lg">
-  <h2 class="text-lg font-bold text-green-300 mb-4">🔄 Intercambiar DEMONPENGU</h2>
-  <iframe
-    src="https://jup.ag/swap?inputMint=BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM&outputMint=So11111111111111111111111111111111111111112"
-    width="100%"
-    height="600"
-    style="border: none; border-radius: 12px; overflow: hidden;"
-    allow="clipboard-read; clipboard-write; web-share"
-    sandbox="allow-scripts allow-same-origin allow-popups allow-forms">
-  </iframe>
-</div>
 
     <!-- Balance -->
     <p id="pengu-balance" class="mt-4 text-green-300 text-sm"></p>
 
-    <!-- Redes -->
-    <div class="mt-8 flex justify-center space-x-6">
-      <a href="https://x.com/ElonBeastToken" target="_blank" class="text-blue-400 hover:text-blue-500">Twitter / X</a>
+    <!-- Swap -->
+    <div id="swap" class="mt-10 bg-gray-800 p-4 rounded-lg">
+      <h2 class="text-lg font-bold text-green-300 mb-4">🔄 Intercambiar DEMONPENGU</h2>
+      <iframe
+        src="https://jup.ag/swap?inputMint=BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM&outputMint=So11111111111111111111111111111111111111112"
+        width="100%"
+        height="600"
+        style="border: none; border-radius: 12px; overflow: hidden;"
+        allow="clipboard-read; clipboard-write; web-share"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-forms">
+      </iframe>
     </div>
 
-    <!-- Gráfico -->
+    <!-- Staking -->
+    <div id="staking" class="mt-10 bg-gray-800 rounded-lg p-4">
+      <h2 class="text-lg font-bold mb-2 text-purple-300">⛓️ Staking DEMONPENGU</h2>
+      <input type="number" id="stake-amount" placeholder="Cantidad" class="p-2 rounded text-black w-1/2" />
+      <button id="stake-btn" class="ml-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-white">
+        Stakear
+      </button>
+      <p id="stake-status" class="mt-2 text-sm text-green-400"></p>
+    </div>
 
-
-  <!-- Airdrop -->
- <!-- <div class="mt-10">
-    <button id="claim-airdrop"
-            class="bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-6 py-2 rounded-full transition">
-      🎁 Reclamar Airdrop
-    </button>
-    <p id="airdrop-status" class="mt-2 text-sm text-green-400"></p>
-  </div> -->
-
-  <!-- Staking -->
- 
-
-  <!-- Footer -->
-  <footer class="mt-10 text-sm text-gray-500 text-center">
-    &copy; 2025 Demon Pengu. All rights cursed.
-  </footer>
+    <!-- Footer -->
+    <footer class="mt-10 text-sm text-gray-500 text-center">
+      &copy; 2025 Demon Pengu. All rights cursed.
+    </footer>
+  </div>
 
   <!-- Scripts -->
   <script>
@@ -178,14 +187,12 @@
 
     phantomBtn.addEventListener("click", async () => {
       if (connectedPubkey) {
-        // Si ya está conectado, al hacer click desconectamos
         await disconnectPhantom();
       } else {
         await connectPhantom();
       }
     });
 
-    // Manejar cambio de cuenta o desconexión desde Phantom Wallet
     if (window.solana && window.solana.isPhantom) {
       window.solana.on("accountChanged", async (publicKey) => {
         if (publicKey) {
@@ -194,7 +201,6 @@
           phantomStatus.textContent = connectedPubkey.slice(0, 4) + "..." + connectedPubkey.slice(-4);
           await getTokenBalance(connectedPubkey);
         } else {
-          // wallet desconectada o sin cuenta seleccionada
           connectedPubkey = null;
           phantomBtn.textContent = "🔗 Conectar Wallet";
           phantomStatus.textContent = "";
@@ -227,31 +233,12 @@
       }
     });
 
-    // Airdrop simulado
-    const claimBtn = document.getElementById("claim-airdrop");
-    const airdropStatus = document.getElementById("airdrop-status");
-
-    claimBtn.addEventListener("click", () => {
-      if (!window.solana?.publicKey) {
-        alert("Conecta tu wallet primero.");
-        return;
-      }
-
-      claimBtn.disabled = true;
-      claimBtn.textContent = "🎁 Reclamando...";
-
-      setTimeout(() => {
-        airdropStatus.textContent = "✅ Airdrop simulado (haz el real en backend luego)";
-        claimBtn.textContent = "🎁 Reclamado";
-      }, 2000);
-    });
-
-    // Staking simulado
+    // Stake simulado
     const stakeBtn = document.getElementById("stake-btn");
     const stakeAmount = document.getElementById("stake-amount");
     const stakeStatus = document.getElementById("stake-status");
 
-    stakeBtn.addEventListener("click", () => {
+    stakeBtn?.addEventListener("click", () => {
       const amount = parseFloat(stakeAmount.value);
       if (!amount || amount <= 0) {
         stakeStatus.textContent = "❌ Ingresa una cantidad válida.";
@@ -269,7 +256,6 @@
       }, 2000);
     });
   </script>
-
 </body>
 </html>
 
