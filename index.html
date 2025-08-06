@@ -1,122 +1,109 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>DEMON PENGU</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background-image: url('background.jpg');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    #grafico::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at center, rgba(255, 0, 0, 0.1), transparent 70%);
+      animation: flames 3s infinite alternate;
+      z-index: 0;
+      border-radius: 0.5rem;
+    }
+
+    @keyframes flames {
+      0%   { transform: scaleY(1); opacity: 0.4; }
+      100% { transform: scaleY(1.05); opacity: 0.8; }
+    }
+
+    #grafico {
+      position: relative;
+      overflow: hidden;
+    }
+  </style>
 </head>
-<body class="bg-black text-white font-sans min-h-screen flex flex-col">
 
-  <!-- Navbar -->
-  <nav class="bg-gray-900 bg-opacity-90 backdrop-blur-md fixed w-full top-0 left-0 z-50 shadow-lg">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
-      <!-- Logo -->
-      <a href="#" class="flex items-center space-x-2">
-        <img src="demonpengu-logo.png" alt="Demon Pengu Logo" class="w-12 h-12 rounded-lg" />
-        <span class="text-red-600 font-extrabold text-xl select-none">DEMON PENGU</span>
-      </a>
+<body class="text-white font-sans">
 
-      <!-- Menu desktop -->
-      <div class="hidden md:flex space-x-8 text-gray-300 font-semibold select-none">
-        <a href="#buy" class="hover:text-red-600 transition">Comprar</a>
-        <a href="#staking" class="hover:text-red-600 transition">Staking</a>
-        <a href="#grafico" class="hover:text-red-600 transition">Gráfico</a>
-        <a href="https://pump.fun/coin/BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM" target="_blank" class="hover:text-red-600 transition">Pump.fun</a>
-      </div>
+  <!-- Header con logo y menú hamburguesa -->
+  <header class="flex items-center justify-between p-4 bg-black bg-opacity-70 fixed w-full z-50">
+    <div class="flex items-center">
+      <img src="demonpengu-logo.png" alt="Demon Pengu" class="w-12 h-12 mr-3">
+      <h1 class="text-2xl font-extrabold text-red-500">DEMON PENGU</h1>
+    </div>
+    <div class="md:hidden">
+      <button id="menu-toggle" class="text-white text-2xl focus:outline-none">☰</button>
+    </div>
+    <nav id="mobile-menu" class="hidden md:flex space-x-6 text-sm font-bold text-gray-200">
+      <a href="#grafico" class="hover:text-red-500">Gráfico</a>
+      <a href="#swap" class="hover:text-red-500">Swap</a>
+      <a href="#staking" class="hover:text-red-500">Staking</a>
+    </nav>
+  </header>
 
-      <!-- Hamburger menu button -->
-      <button id="menu-btn" class="md:hidden focus:outline-none">
-        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round" viewBox="0 0 24 24">
-          <path d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-      </button>
+  <!-- Menú móvil desplegable -->
+  <div id="mobile-dropdown" class="md:hidden hidden bg-black bg-opacity-90 p-4 mt-16 space-y-2 text-center">
+    <a href="#grafico" class="block text-white hover:text-red-500">Gráfico</a>
+    <a href="#swap" class="block text-white hover:text-red-500">Swap</a>
+    <a href="#staking" class="block text-white hover:text-red-500">Staking</a>
+  </div>
+
+  <!-- Botón conectar wallet -->
+  <div id="phantom-connect-wrapper" class="fixed top-20 right-4 z-40">
+    <button id="phantom-connect"
+      class="bg-gradient-to-r from-purple-700 via-indigo-500 to-blue-500 hover:from-purple-800 hover:to-blue-600 text-white font-semibold px-5 py-2 rounded-full shadow-lg">
+      🔗 Conectar Wallet
+    </button>
+    <p id="phantom-status" class="text-sm text-green-400 mt-1 text-right"></p>
+  </div>
+
+  <!-- Contenido principal -->
+  <main class="pt-32 max-w-4xl mx-auto p-4 text-center">
+
+    <!-- Precio -->
+    <p class="text-xl mt-4 text-green-400 font-mono">💰 Precio: <span id="live-price">$0.00</span></p>
+
+    <!-- Swap -->
+    <div id="swap" class="mt-10 bg-gray-900 bg-opacity-80 p-6 rounded-lg">
+      <h2 class="text-lg font-bold text-purple-300 mb-2">🔄 Intercambiar SOL → DEMONPENGU</h2>
+      <input type="number" id="sol-amount" placeholder="SOL" class="p-2 rounded text-black w-1/2" />
+      <button id="swap-button"
+        class="ml-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded text-white font-bold">Swap</button>
+      <p id="swap-status" class="mt-2 text-sm text-green-400"></p>
     </div>
 
-    <!-- Mobile menu -->
-    <div id="mobile-menu" class="hidden bg-gray-800 bg-opacity-95 px-4 pt-4 pb-6 space-y-3 md:hidden text-center font-semibold">
-      <a href="#buy" class="block hover:text-red-600 transition">Comprar</a>
-      <a href="#staking" class="block hover:text-red-600 transition">Staking</a>
-      <a href="#grafico" class="block hover:text-red-600 transition">Gráfico</a>
-      <a href="https://pump.fun/coin/BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM" target="_blank" class="block hover:text-red-600 transition">Pump.fun</a>
-    </div>
-  </nav>
-
-  <!-- Main content wrapper to offset navbar -->
-  <main class="flex-grow pt-20 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-
-    <!-- Wallet connect button top-right fixed -->
-    <div id="phantom-connect-wrapper" class="fixed top-4 right-4 z-50">
-      <button id="phantom-connect"
-              class="bg-gradient-to-r from-purple-700 via-indigo-500 to-blue-500 hover:from-purple-800 hover:to-blue-600
-                     text-white font-semibold px-5 py-2 rounded-full shadow-lg shadow-indigo-900/30 transition duration-300">
-        🔗 Conectar Wallet
-      </button>
-      <p id="phantom-status" class="text-sm text-green-400 mt-1 text-right"></p>
-    </div>
-
-    <!-- Info principal -->
-    <section class="text-center mb-8">
-      <h1 class="text-5xl font-extrabold text-red-600 select-none">DEMON PENGU</h1>
-      <p class="text-xl text-gray-300 mt-2 select-none">Ticker: <span class="font-mono text-red-400">DEMONPENGU</span></p>
-
-      <p class="mt-4 text-lg text-gray-400 italic max-w-xl mx-auto select-none">
-        In the cursed reaches of the Infernal Pole—where fire burns beneath black snow and the sky roars with blood-red auroras—lives a damned species: the Demon Penguins. They weren’t always like this.
-      </p>
-    </section>
-
-    <!-- Mint y Precio -->
-    <section id="buy" class="mt-6 p-4 bg-gray-800 rounded-lg text-left text-sm select-none">
-      <p><strong>🎯 Mint Address:</strong><br />
-        <span class="break-words text-gray-200 select-text">BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM</span>
-      </p>
-      <p class="mt-2"><strong>💰 Precio actual:</strong> <span id="live-price" class="text-green-400">$0.00</span></p>
-    </section>
-
-    <!-- Botón comprar -->
-    <div class="mt-6 text-center">
-      <a href="https://pump.fun/coin/BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM"
-         target="_blank"
-         class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-full transition select-none">
-        🔥 Comprar en Pump.fun
-      </a>
-    </div>
-
-    <!-- Balance -->
-    <p id="pengu-balance" class="mt-4 text-green-300 text-sm select-none"></p>
-
-    <!-- Redes -->
-    <div class="mt-8 flex justify-center space-x-6 select-none">
-      <a href="https://x.com/ElonBeastToken" target="_blank" class="text-blue-400 hover:text-blue-500">Twitter / X</a>
+    <!-- Gráfico -->
+    <div id="grafico" class="mt-10 bg-gray-800 p-6 rounded-lg">
+      <h2 class="text-lg font-bold mb-4 text-purple-300">📈 Gráfico Demon Pengu</h2>
+      <canvas id="penguChart" height="100"></canvas>
     </div>
 
     <!-- Staking -->
-   
-
-    <!-- Gráfico -->
-    <section id="grafico" class="mt-10 bg-gray-800 p-6 rounded-lg select-none">
-      <h2 class="text-lg font-bold mb-4 text-purple-300">📈 Gráfico Demon Pengu</h2>
-      <canvas id="penguChart" height="100"></canvas>
-    </section>
-
+    <div id="staking" class="mt-10 bg-gray-900 bg-opacity-80 p-6 rounded-lg">
+      <h2 class="text-lg font-bold text-purple-300 mb-2">⛓️ Staking DEMONPENGU</h2>
+      <input type="number" id="stake-amount" placeholder="Cantidad" class="p-2 rounded text-black w-1/2" />
+      <button id="stake-btn"
+        class="ml-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-white">Stakear</button>
+      <p id="stake-status" class="mt-2 text-sm text-green-400"></p>
+    </div>
   </main>
 
-  <!-- GraficoSwap -->
-  <div id="swap" class="mt-10 bg-gray-800 p-4 rounded-lg">
-      <h2 class="text-lg font-bold text-green-300 mb-4">🔄 Intercambiar DEMONPENGU</h2>
-      <iframe
-        src="https://jup.ag/swap?inputMint=BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM&outputMint=So11111111111111111111111111111111111111112"
-        width="100%"
-        height="600"
-        style="border: none; border-radius: 12px; overflow: hidden;"
-        allow="clipboard-read; clipboard-write; web-share"
-        sandbox="allow-scripts allow-same-origin allow-popups allow-forms">
-      </iframe>
-    </div>
   <!-- Footer -->
-  <footer class="mt-10 mb-6 text-sm text-gray-500 text-center select-none">
+  <footer class="mt-16 p-4 text-sm text-gray-400 text-center bg-black bg-opacity-50">
     &copy; 2025 Demon Pengu. All rights cursed.
   </footer>
 
@@ -124,227 +111,118 @@
   <script>
     const TOKEN_MINT = "BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM";
 
-    // Phantom Wallet connection
-    const phantomBtn = document.getElementById("phantom-connect");
-    const phantomStatus = document.getElementById("phantom-status");
-    const penguBalance = document.getElementById("pengu-balance");
     const livePrice = document.getElementById("live-price");
-
-    let connectedPubkey = null;
 
     async function loadPrice() {
       try {
-        livePrice.textContent = "⏳ Cargando precio...";
         const res = await fetch("https://api.geckoterminal.com/api/v2/networks/solana/tokens/" + TOKEN_MINT);
         const data = await res.json();
         const price = data.data.attributes.price_usd;
         livePrice.textContent = `$${parseFloat(price).toFixed(6)}`;
-      } catch (error) {
-        console.error("Error al obtener el precio:", error);
+      } catch {
         livePrice.textContent = "N/A";
       }
     }
 
-    async function getTokenBalance(pubkey) {
+    async function crearGraficoRealista() {
+      let precioActual = 0.0005;
       try {
-        penguBalance.textContent = "⏳ Cargando balance...";
-        const res = await fetch(`https://api.mainnet-beta.solana.com`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            jsonrpc: "2.0",
-            id: 1,
-            method: "getTokenAccountsByOwner",
-            params: [
-              pubkey,
-              { mint: TOKEN_MINT },
-              { encoding: "jsonParsed" }
-            ]
-          })
-        });
+        const res = await fetch(`https://api.geckoterminal.com/api/v2/networks/solana/tokens/${TOKEN_MINT}`);
         const data = await res.json();
-        const account = data.result.value[0];
-        const amount = account?.account.data.parsed.info.tokenAmount.uiAmount || 0;
-        penguBalance.textContent = `🐧 Balance: ${amount} DEMONPENGU`;
-      } catch (err) {
-        console.error("No se pudo obtener el balance:", err);
-        penguBalance.textContent = "❌ Error al cargar balance";
-      }
-    }
+        precioActual = parseFloat(data.data.attributes.price_usd);
+      } catch {}
 
-    async function connectPhantom() {
-      if (!window.solana || !window.solana.isPhantom) {
-        alert("Phantom Wallet no está instalada. Instálala desde https://phantom.app/");
-        return;
+      const variaciones = [0, 5, -3, 10, -6, 15, -8, 20];
+      let base = precioActual;
+      let datos = [];
+
+      for (let i = 0; i < variaciones.length; i++) {
+        base = base * (1 + variaciones[i] / 100);
+        datos.push(parseFloat(base.toFixed(6)));
       }
 
-      phantomBtn.disabled = true;
-      phantomBtn.textContent = "⏳ Conectando...";
+      const datosEscalados = datos.map(p => p * 100000);
 
-      try {
-        const res = await window.solana.connect();
-        connectedPubkey = res.publicKey.toString();
-        phantomBtn.textContent = "✅ Conectado (click para desconectar)";
-        phantomBtn.disabled = false;
-        phantomStatus.textContent = connectedPubkey.slice(0, 4) + "..." + connectedPubkey.slice(-4);
-        await getTokenBalance(connectedPubkey);
-      } catch (err) {
-        console.error("Usuario canceló conexión:", err);
-        phantomBtn.textContent = "🔗 Conectar Wallet";
-        phantomBtn.disabled = false;
-        phantomStatus.textContent = "";
-        penguBalance.textContent = "";
-      }
-    }
+      const ctx = document.getElementById("penguChart").getContext("2d");
 
-    async function disconnectPhantom() {
-      if (!window.solana || !window.solana.isPhantom) return;
+      if (window.penguChartInstance) window.penguChartInstance.destroy();
 
-      try {
-        await window.solana.disconnect();
-      } catch (err) {
-        console.warn("Error al desconectar:", err);
-      }
+      const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+      gradient.addColorStop(0, 'rgba(255, 0, 0, 0.7)');
+      gradient.addColorStop(1, 'rgba(0, 0, 0, 0.2)');
 
-      connectedPubkey = null;
-      phantomBtn.textContent = "🔗 Conectar Wallet";
-      phantomStatus.textContent = "";
-      penguBalance.textContent = "";
-    }
-
-    phantomBtn.addEventListener("click", async () => {
-      if (connectedPubkey) {
-        await disconnectPhantom();
-      } else {
-        await connectPhantom();
-      }
-    });
-
-    // Manejar cambio de cuenta o desconexión desde Phantom Wallet
-    if (window.solana && window.solana.isPhantom) {
-      window.solana.on("accountChanged", async (publicKey) => {
-        if (publicKey) {
-          connectedPubkey = publicKey.toString();
-          phantomBtn.textContent = "✅ Conectado (click para desconectar)";
-          phantomStatus.textContent = connectedPubkey.slice(0, 4) + "..." + connectedPubkey.slice(-4);
-          await getTokenBalance(connectedPubkey);
-        } else {
-          await disconnectPhantom();
+      window.penguChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ["Inicio", "Pump", "Dump", "Recovery", "Lunares", "Rise", "Fall", "Revenge"],
+          datasets: [{
+            label: "🔥 DEMONPENGU (x100k)",
+            data: datosEscalados,
+            borderColor: "rgba(255, 60, 60, 1)",
+            backgroundColor: gradient,
+            stepped: true,
+            borderWidth: 5,
+            pointRadius: 5,
+            pointHoverRadius: 8,
+            pointBackgroundColor: "#fff",
+            pointHoverBackgroundColor: "orange",
+            tension: 0.05,
+            fill: true,
+          }]
+        },
+        options: {
+          responsive: true,
+          animation: {
+            duration: 2000,
+            easing: 'easeOutBounce'
+          },
+          plugins: {
+            legend: {
+              labels: { color: "#fff", font: { size: 14 } }
+            },
+            tooltip: {
+              backgroundColor: "#1a1a1a",
+              titleColor: "#ff4444",
+              bodyColor: "#fff",
+              callbacks: {
+                label: function (context) {
+                  const original = context.raw / 100000;
+                  return `Precio: $${original.toFixed(6)}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: "#aaa", font: { size: 12 } },
+              grid: { color: "#333" }
+            },
+            y: {
+              beginAtZero: false,
+              ticks: {
+                color: "#ccc",
+                callback: function (value) {
+                  return `$${(value / 100000).toFixed(4)}`;
+                }
+              },
+              grid: { color: "#333" }
+            }
+          }
         }
       });
     }
 
-    // Cargar precio en load
-    window.addEventListener("load", () => {
-      loadPrice();
+    document.getElementById("menu-toggle").addEventListener("click", () => {
+      const menu = document.getElementById("mobile-dropdown");
+      menu.classList.toggle("hidden");
+    });
+
+    window.addEventListener("load", async () => {
+      await loadPrice();
       crearGraficoRealista();
     });
+  </script>
 
-    // Menu hamburguesa mobile
-    const menuBtn = document.getElementById("menu-btn");
-    const mobileMenu = document.getElementById("mobile-menu");
-
-    menuBtn.addEventListener("click", () => {
-      if (mobileMenu.classList.contains("hidden")) {
-        mobileMenu.classList.remove("hidden");
-      } else {
-        mobileMenu.classList.add("hidden");
-      }
-    });
-
-    // Función para crear gráfico escalera estilo Demon Pengu
-   <script>
-  async function crearGraficoRealista() {
-    let precioActual = 0.0005;
-
-    try {
-      const res = await fetch(`https://api.geckoterminal.com/api/v2/networks/solana/tokens/${TOKEN_MINT}`);
-      const data = await res.json();
-      precioActual = parseFloat(data.data.attributes.price_usd);
-    } catch {
-      console.warn("No se pudo obtener el precio real, usando fallback");
-    }
-
-    const variaciones = [0, 5, -3, 10, -6, 15, -8, 20];
-    let base = precioActual;
-    let datos = [];
-
-    for (let i = 0; i < variaciones.length; i++) {
-      base = base * (1 + variaciones[i] / 100);
-      datos.push(parseFloat(base.toFixed(6)));
-    }
-
-    const datosEscalados = datos.map(p => p * 100000);
-
-    const ctx = document.getElementById("penguChart").getContext("2d");
-
-    if (window.penguChartInstance) window.penguChartInstance.destroy();
-
-    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-    gradient.addColorStop(0, 'rgba(255, 0, 0, 0.7)');
-    gradient.addColorStop(1, 'rgba(0, 0, 0, 0.2)');
-
-    window.penguChartInstance = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ["Inicio", "Pump", "Dump", "Recovery", "Lunares", "Rise", "Fall", "Revenge"],
-        datasets: [{
-          label: "🔥 DEMONPENGU (x100k)",
-          data: datosEscalados,
-          borderColor: "rgba(255, 60, 60, 1)",
-          backgroundColor: gradient,
-          stepped: true,
-          borderWidth: 5,
-          pointRadius: 5,
-          pointHoverRadius: 8,
-          pointBackgroundColor: "#fff",
-          pointHoverBackgroundColor: "orange",
-          tension: 0.05,
-          fill: true,
-        }]
-      },
-      options: {
-        responsive: true,
-        animation: {
-          duration: 2000,
-          easing: 'easeOutBounce'
-        },
-        plugins: {
-          legend: {
-            labels: { color: "#fff", font: { size: 14 } }
-          },
-          tooltip: {
-            backgroundColor: "#1a1a1a",
-            titleColor: "#ff4444",
-            bodyColor: "#fff",
-            callbacks: {
-              label: function(context) {
-                const original = context.raw / 100000;
-                return `Precio: $${original.toFixed(6)}`;
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            ticks: { color: "#aaa", font: { size: 12 } },
-            grid: { color: "#333" }
-          },
-          y: {
-            beginAtZero: false,
-            ticks: {
-              color: "#ccc",
-              callback: function(value) {
-                return `$${(value / 100000).toFixed(4)}`;
-              }
-            },
-            grid: { color: "#333" }
-          }
-        }
-      }
-    });
-  }
-</script>
 </body>
 </html>
 
