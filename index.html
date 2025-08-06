@@ -5,122 +5,75 @@
   <title>DEMON PENGU</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet" />
-  <style>
-    @media (max-width: 768px) {
-      #mobile-menu {
-        display: none;
-      }
-
-      #mobile-menu.open {
-        display: block;
-      }
-    }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-black text-white font-sans">
 
-  <!-- NAVBAR -->
-  <nav class="bg-gray-900 shadow-md fixed top-0 left-0 w-full z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16 items-center">
-        <!-- Logo -->
-        <a href="#" class="flex items-center">
-          <img src="demonpengu-logo.png" alt="Logo" class="h-10 w-auto mr-3" />
-          <span class="text-red-600 font-extrabold text-xl">Demon Pengu</span>
-        </a>
-
-        <!-- Desktop menu -->
-        <div class="hidden md:flex space-x-6 items-center">
-          <a href="#buy" class="text-gray-300 hover:text-red-500">Comprar</a>
-          <a href="#staking" class="text-gray-300 hover:text-red-500">Staking</a>
-          <a href="#about" class="text-gray-300 hover:text-red-500">Lore</a>
-          <a href="#contact" class="text-gray-300 hover:text-red-500">Contacto</a>
-        </div>
-
-        <!-- Mobile menu button -->
-        <div class="md:hidden flex items-center">
-          <button id="menu-toggle" class="text-gray-300 focus:outline-none text-2xl">☰</button>
-        </div>
-      </div>
+  <!-- Navbar -->
+  <header class="bg-gray-900 p-4 flex justify-between items-center fixed top-0 left-0 w-full z-50">
+    <div class="flex items-center space-x-4">
+      <img src="demonpengu-logo.png" alt="Logo" class="h-10 w-10 rounded-full" />
+      <h1 class="text-xl font-bold text-red-500">DEMON PENGU</h1>
     </div>
-
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="md:hidden bg-gray-800 px-4 pb-4 space-y-2">
-      <a href="#buy" class="block text-gray-300 hover:text-red-500">Comprar</a>
-      <a href="#staking" class="block text-gray-300 hover:text-red-500">Staking</a>
-      <a href="#about" class="block text-gray-300 hover:text-red-500">Lore</a>
-      <a href="#contact" class="block text-gray-300 hover:text-red-500">Contacto</a>
+    <div class="md:hidden">
+      <button id="menu-toggle" class="text-white focus:outline-none">☰</button>
     </div>
+    <nav id="menu" class="hidden md:flex space-x-6 text-sm">
+      <a href="#swap" class="hover:text-red-400">Swap</a>
+      <a href="#grafico" class="hover:text-red-400">Gráfico</a>
+      <a href="https://pump.fun/coin/BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM" target="_blank" class="hover:text-red-400">Comprar</a>
+    </nav>
+  </header>
+
+  <nav id="mobile-menu" class="md:hidden hidden bg-gray-800 p-4 mt-16 space-y-2 text-sm">
+    <a href="#swap" class="block hover:text-red-400">Swap</a>
+    <a href="#grafico" class="block hover:text-red-400">Gráfico</a>
+    <a href="https://pump.fun/coin/BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM" class="block hover:text-red-400" target="_blank">Comprar</a>
   </nav>
 
-  <!-- Botón Phantom -->
-  <div id="phantom-connect-wrapper" class="fixed top-20 right-4 z-50">
-    <button id="phantom-connect"
-      class="bg-gradient-to-r from-purple-700 via-indigo-500 to-blue-500 hover:from-purple-800 hover:to-blue-600
-             text-white font-semibold px-5 py-2 rounded-full shadow-lg shadow-indigo-900/30 transition duration-300">
-      🔗 Conectar Wallet
-    </button>
-    <p id="phantom-status" class="text-sm text-green-400 mt-1 text-right"></p>
+  <!-- Conexión Phantom -->
+  <div id="phantom-connect-wrapper" class="mt-20 text-center">
+    <button id="phantom-connect" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-5 py-2 rounded-full transition">🔗 Conectar Wallet</button>
+    <p id="phantom-status" class="text-sm text-green-400 mt-1"></p>
   </div>
 
   <!-- Contenido principal -->
-  <div class="max-w-3xl mx-auto p-6 text-center pt-32">
+  <div class="max-w-3xl mx-auto p-4 text-center">
 
-    <h1 class="text-5xl font-extrabold text-red-600">DEMON PENGU</h1>
-    <p class="text-xl text-gray-300 mt-2">Ticker: <span class="font-mono text-red-400">DEMONPENGU</span></p>
+    <!-- Información -->
+    <h2 class="text-3xl font-extrabold text-red-600 mt-10">Ticker: <span class="text-red-400">DEMONPENGU</span></h2>
+    <p class="mt-4 text-gray-300 italic">In the cursed reaches of the Infernal Pole...</p>
+    <p class="mt-2 text-sm text-gray-400">🎯 Mint: BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM</p>
+    <p><strong>💰 Precio:</strong> <span id="live-price" class="text-green-400">$0.00</span></p>
+    <p id="pengu-balance" class="mt-2 text-green-300 text-sm"></p>
 
-    <p id="about" class="mt-4 text-lg text-gray-400 italic">
-      In the cursed reaches of the Infernal Pole—where fire burns beneath black snow and the sky roars with blood-red auroras—lives a damned species: the Demon Penguins.
-    </p>
-
-    <!-- Mint y Precio -->
-    <div class="mt-6 p-4 bg-gray-800 rounded-lg text-left text-sm">
-      <p><strong>🎯 Mint Address:</strong><br />
-        <span class="break-words text-gray-200">BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM</span>
-      </p>
-      <p class="mt-2"><strong>💰 Precio actual:</strong> <span id="live-price" class="text-green-400">$0.00</span></p>
+    <!-- Swap -->
+    <div id="swap" class="mt-10 bg-gray-800 p-6 rounded-lg text-left">
+      <h2 class="text-lg font-bold mb-4 text-purple-300">🔁 Swap SOL → DEMONPENGU</h2>
+      <input id="sol-amount" type="number" placeholder="Cantidad de SOL" class="w-full p-2 rounded text-black" />
+      <button id="swap-button" class="w-full mt-3 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition">Hacer Swap</button>
+      <p id="swap-status" class="mt-2 text-green-400 text-sm"></p>
     </div>
 
-    <!-- Botón comprar -->
-    <a id="buy" href="https://pump.fun/coin/BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM"
-       target="_blank"
-       class="mt-6 inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-full transition">
-      🔥 Comprar en Pump.fun
-    </a>
-
-    <!-- Balance -->
-    <p id="pengu-balance" class="mt-4 text-green-300 text-sm"></p>
-
-    <!-- Staking -->
-    <div id="staking" class="mt-10 bg-gray-800 rounded-lg p-4">
-      <h2 class="text-lg font-bold mb-2 text-purple-300">⛓️ Staking DEMONPENGU</h2>
-      <input type="number" id="stake-amount" placeholder="Cantidad" class="p-2 rounded text-black w-1/2" />
-      <button id="stake-btn" class="ml-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-white">
-        Stakear
-      </button>
-      <p id="stake-status" class="mt-2 text-sm text-green-400"></p>
-    </div>
-
-    <!-- Contacto -->
-    <div id="contact" class="mt-8 text-gray-500 text-sm">
-      <a href="https://x.com/ElonBeastToken" target="_blank" class="text-blue-400 hover:text-blue-500">Twitter / X</a>
+    <!-- Gráfico -->
+    <div id="grafico" class="mt-10 bg-gray-800 p-6 rounded-lg">
+      <h2 class="text-lg font-bold mb-4 text-purple-300">📈 Gráfico Demon Pengu</h2>
+      <canvas id="penguChart" height="100"></canvas>
     </div>
 
     <!-- Footer -->
-    <footer class="mt-10 text-sm text-gray-500 text-center">
-      &copy; 2025 Demon Pengu. All rights cursed.
-    </footer>
+    <footer class="mt-12 text-sm text-gray-500 text-center">&copy; 2025 Demon Pengu. All rights cursed.</footer>
   </div>
 
-  <!-- JS -->
+  <!-- Scripts -->
   <script>
     const TOKEN_MINT = "BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM";
+    let connectedPubkey = null;
+
     const phantomBtn = document.getElementById("phantom-connect");
     const phantomStatus = document.getElementById("phantom-status");
     const penguBalance = document.getElementById("pengu-balance");
     const livePrice = document.getElementById("live-price");
-
-    let connectedPubkey = null;
 
     async function loadPrice() {
       try {
@@ -142,7 +95,11 @@
             jsonrpc: "2.0",
             id: 1,
             method: "getTokenAccountsByOwner",
-            params: [pubkey, { mint: TOKEN_MINT }, { encoding: "jsonParsed" }]
+            params: [
+              pubkey,
+              { mint: TOKEN_MINT },
+              { encoding: "jsonParsed" }
+            ]
           })
         });
         const data = await res.json();
@@ -155,78 +112,95 @@
     }
 
     async function connectPhantom() {
-      if (!window.solana || (!window.solana.isPhantom && !window.solana.isMobile)) {
-        alert("Instala Phantom Wallet desde https://phantom.app/");
+      if (!window?.solana?.isPhantom) {
+        alert("Phantom Wallet no está instalada. Instálala desde https://phantom.app/");
         return;
       }
-
-      phantomBtn.disabled = true;
-      phantomBtn.textContent = "⏳ Conectando...";
 
       try {
         const res = await window.solana.connect();
         connectedPubkey = res.publicKey.toString();
-        phantomBtn.textContent = "✅ Conectado (click para desconectar)";
-        phantomBtn.disabled = false;
+        phantomBtn.textContent = "✅ Conectado";
         phantomStatus.textContent = connectedPubkey.slice(0, 4) + "..." + connectedPubkey.slice(-4);
         await getTokenBalance(connectedPubkey);
       } catch {
         phantomBtn.textContent = "🔗 Conectar Wallet";
-        phantomBtn.disabled = false;
         phantomStatus.textContent = "";
-        penguBalance.textContent = "";
       }
     }
 
-    async function disconnectPhantom() {
-      if (!window.solana) return;
-      try { await window.solana.disconnect(); } catch {}
-      connectedPubkey = null;
-      phantomBtn.textContent = "🔗 Conectar Wallet";
-      phantomStatus.textContent = "";
-      penguBalance.textContent = "";
-    }
+    phantomBtn.addEventListener("click", connectPhantom);
 
-    phantomBtn.addEventListener("click", () => {
-      connectedPubkey ? disconnectPhantom() : connectPhantom();
-    });
-
+    // Auto conectar si está confiado
     window.addEventListener("load", async () => {
       loadPrice();
       setInterval(loadPrice, 15000);
-      if (window.solana) {
+      if (window.solana?.isPhantom) {
         try {
           const res = await window.solana.connect({ onlyIfTrusted: true });
           connectedPubkey = res.publicKey.toString();
-          phantomBtn.textContent = "✅ Conectado (click para desconectar)";
+          phantomBtn.textContent = "✅ Conectado";
           phantomStatus.textContent = connectedPubkey.slice(0, 4) + "..." + connectedPubkey.slice(-4);
           await getTokenBalance(connectedPubkey);
-        } catch {}
+        } catch {
+          phantomBtn.textContent = "🔗 Conectar Wallet";
+        }
+      } else {
+        phantomBtn.textContent = "⚠️ Phantom no detectado";
+        phantomBtn.disabled = true;
+        phantomStatus.textContent = "Instala la app Phantom.";
       }
     });
 
-    // Simulated Staking
-    document.getElementById("stake-btn").addEventListener("click", () => {
-      const amount = parseFloat(document.getElementById("stake-amount").value);
-      const status = document.getElementById("stake-status");
+    // Simulación de swap
+    document.getElementById("swap-button").addEventListener("click", () => {
+      const amount = parseFloat(document.getElementById("sol-amount").value);
+      const status = document.getElementById("swap-status");
+
+      if (!connectedPubkey) {
+        status.textContent = "❌ Conecta tu wallet primero.";
+        return;
+      }
       if (!amount || amount <= 0) {
         status.textContent = "❌ Ingresa una cantidad válida.";
         return;
       }
-      if (!window.solana?.publicKey) {
-        status.textContent = "❌ Conecta tu wallet.";
-        return;
-      }
-      status.textContent = "⏳ Stake simulado: " + amount + " DEMONPENGU";
+
+      status.textContent = "⏳ Procesando swap...";
       setTimeout(() => {
-        status.textContent = `✅ ¡Stake exitoso de ${amount} DEMONPENGU! (simulado)`;
+        status.textContent = `✅ Has swappeado ${amount} SOL por ${amount * 100000} DEMONPENGU (simulado)`;
       }, 2000);
     });
 
-    // Menu toggle
+    // Menu hamburguesa
     document.getElementById("menu-toggle").addEventListener("click", () => {
       const menu = document.getElementById("mobile-menu");
-      menu.classList.toggle("open");
+      menu.classList.toggle("hidden");
+    });
+
+    // Gráfico personalizado estilo escalera
+    const ctx = document.getElementById("penguChart").getContext("2d");
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ["Inicio", "Pump", "Dump", "Recovery", "Lunares", "Infernal Rise", "Caída Final"],
+        datasets: [{
+          label: "Precio DEMONPENGU (simulado)",
+          data: [0.0001, 0.001, 0.0005, 0.002, 0.0015, 0.003, 0.0002],
+          borderColor: "red",
+          backgroundColor: "rgba(255,0,0,0.1)",
+          stepped: true,
+          borderWidth: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: "#fff" } } },
+        scales: {
+          x: { ticks: { color: "#ccc" }, grid: { color: "#444" } },
+          y: { ticks: { color: "#ccc" }, grid: { color: "#444" } }
+        }
+      }
     });
   </script>
 </body>
