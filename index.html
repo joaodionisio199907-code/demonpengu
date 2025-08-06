@@ -64,8 +64,8 @@
       <button id="menu-toggle" class="text-white text-2xl focus:outline-none">☰</button>
     </div>
     <nav id="mobile-menu" class="hidden md:flex space-x-6 text-sm font-bold text-gray-200">
-      <a href="#grafico" class="hover:text-red-500">Gráfico</a>
-      <a href="#swap" class="hover:text-red-500">Swap</a>
+      <a href="https://x.com/ElonBeastToken" class="hover:text-red-500">Twitter</a>
+      <a href="https://solscan.io/token/BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM" class="hover:text-red-500">SolScan</a>
       <a href="#staking" class="hover:text-red-500">Staking</a>
       <div id="phantom-connect-wrapper" class="fixed top-20 right-4 z-40">
     <button id="phantom-connect"
@@ -85,12 +85,12 @@
   <!-- Contenido principal -->
   <div class="max-w-3xl mx-auto p-6 text-center">
 
-    <h1 class="text-5xl font-extrabold text-red-600 fire-border">DEMON PENGU</h1>
+    
     <p class="text-xl text-gray-300 mt-2">Ticker: <span class="font-mono text-red-400">DEMONPENGU</span></p>
 
     <!-- Precio y dirección -->
     <div class="mt-6 p-4 bg-gray-900 bg-opacity-70 rounded-lg text-left text-sm">
-      <p><strong>🎯 Mint Address:</strong><br />
+      <p><strong>🎯Mint Address:</strong><br />
         <span class="break-words text-gray-200">BcLUjirP15KdJH9G2Lo3bYcsAirvaYr5dffgcQxmM8SM</span>
       </p>
      <p class="text-xl mt-4 text-green-400 font-mono">💰 Precio: <span id="live-price">$0.00</span></p>
@@ -98,7 +98,7 @@
 
     <!-- Gráfico Demon Pengu -->
     <div id="grafico" class="mt-10 bg-gray-800 p-6 rounded-lg">
-      <h2 class="text-lg font-bold mb-4 text-purple-300">📈 Gráfico Demon Pengu</h2>
+      <h2 class="text-lg font-bold mb-4 text-purple-300"></h2>
       <canvas id="penguChart" height="100"></canvas>
     </div>
 
@@ -185,7 +185,7 @@
         try {
           const res = await window.solana.connect();
           connectedPubkey = res.publicKey.toString();
-          phantomBtn.textContent = "✅ Conectado";
+          phantomBtn.textContent = "✅Connected";
           phantomStatus.textContent = connectedPubkey.slice(0, 4) + "..." + connectedPubkey.slice(-4);
         } catch (err) {
           console.error("Error al conectar:", err);
@@ -193,7 +193,7 @@
       } else {
         await window.solana.disconnect();
         connectedPubkey = null;
-        phantomBtn.textContent = "🔗 Conectar Wallet";
+        phantomBtn.textContent = "🔗Conect Wallet";
         phantomStatus.textContent = "";
       }
     });
