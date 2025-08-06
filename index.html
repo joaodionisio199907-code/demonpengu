@@ -52,24 +52,40 @@
 </head>
 <body>
 
-  <!-- Menú -->
-  <div class="flex justify-between items-center px-6 py-4">
-    <img src="demonpengu-logo.png" class="w-16" alt="Logo Demon Pengu" />
+ <body class="text-white font-sans">
 
-    <div class="lg:hidden">
-      <button id="menu-toggle" class="focus:outline-none">
-        <div class="hamburger"></div>
-        <div class="hamburger"></div>
-        <div class="hamburger"></div>
-      </button>
+  <!-- Header con logo y menú hamburguesa -->
+  <header class="flex items-center justify-between p-4 bg-black bg-opacity-70 fixed w-full z-50">
+    <div class="flex items-center">
+      <img src="demonpengu-logo.png" alt="Demon Pengu" class="w-12 h-12 mr-3">
+      <h1 class="text-2xl font-extrabold text-red-500">DEMON PENGU</h1>
     </div>
+    <div class="md:hidden">
+      <button id="menu-toggle" class="text-white text-2xl focus:outline-none">☰</button>
+    </div>
+    <nav id="mobile-menu" class="hidden md:flex space-x-6 text-sm font-bold text-gray-200">
+      <a href="#grafico" class="hover:text-red-500">Gráfico</a>
+      <a href="#swap" class="hover:text-red-500">Swap</a>
+      <a href="#staking" class="hover:text-red-500">Staking</a>
+    </nav>
+  </header>
 
-    <ul id="menu" class="lg:flex space-x-4 text-white font-semibold hidden lg:block">
-      <li><a href="#swap" class="hover:text-red-400">Swap</a></li>
-      <li><a href="#grafico" class="hover:text-red-400">Gráfico</a></li>
-      <li><a href="#staking" class="hover:text-red-400">Staking</a></li>
-    </ul>
+  <!-- Menú móvil desplegable -->
+  <div id="mobile-dropdown" class="md:hidden hidden bg-black bg-opacity-90 p-4 mt-16 space-y-2 text-center">
+    <a href="#grafico" class="block text-white hover:text-red-500">Gráfico</a>
+    <a href="#swap" class="block text-white hover:text-red-500">Swap</a>
+    <a href="#staking" class="block text-white hover:text-red-500">Staking</a>
   </div>
+
+  <!-- Botón conectar wallet -->
+  <div id="phantom-connect-wrapper" class="fixed top-20 right-4 z-40">
+    <button id="phantom-connect"
+      class="bg-gradient-to-r from-purple-700 via-indigo-500 to-blue-500 hover:from-purple-800 hover:to-blue-600 text-white font-semibold px-5 py-2 rounded-full shadow-lg">
+      🔗 Conectar Wallet
+    </button>
+    <p id="phantom-status" class="text-sm text-green-400 mt-1 text-right"></p>
+  </div>
+
 
   <!-- Conexión Phantom -->
   <div class="fixed top-4 right-4 z-50">
