@@ -253,65 +253,98 @@
     });
 
     // Función para crear gráfico escalera estilo Demon Pengu
-    async function crearGraficoRealista() {
-      // Obtener precio actual real
-      let precioActual = 0.0005; // fallback si falla
+   <script>
+  async function crearGraficoRealista() {
+    let precioActual = 0.0005;
 
-      try {
-        const res = await fetch(`https://api.geckoterminal.com/api/v2/networks/solana/tokens/${TOKEN_MINT}`);
-        const data = await res.json();
-        precioActual = parseFloat(data.data.attributes.price_usd);
-      } catch {
-        console.warn("No se pudo obtener el precio real, usando fallback");
-      }
+    try {
+      const res = await fetch(`https://api.geckoterminal.com/api/v2/networks/solana/tokens/${TOKEN_MINT}`);
+      const data = await res.json();
+      precioActual = parseFloat(data.data.attributes.price_usd);
+    } catch {
+      console.warn("No se pudo obtener el precio real, usando fallback");
+    }
 
-      // Generar datos simulados tipo escalera suave
-      const variaciones = [0, 0.5, -0.3, 1, -0.2, 1.5, -2]; // % variación relativa
-      let datos = [];
-      let base = precioActual;
+    const variaciones = [0, 5, -3, 10, -6, 15, -8, 20];
+    let base = precioActual;
+    let datos = [];
 
-      for (let i = 0; i < variaciones.length; i++) {
-        const variacionFactor = 1 + variaciones[i] / 100;
-        base = base * variacionFactor;
-        datos.push(parseFloat(base.toFixed(6)));
-      }
+    for (let i = 0; i < variaciones.length; i++) {
+      base = base * (1 + variaciones[i] / 100);
+      datos.push(parseFloat(base.toFixed(6)));
+    }
 
-      const ctx = document.getElementById("penguChart").getContext("2d");
+    const datosEscalados = datos.map(p => p * 100000);
 
-      if(window.penguChartInstance) {
-        window.penguChartInstance.destroy();
-      }
+    const ctx = document.getElementById("penguChart").getContext("2d");
 
-      window.penguChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: ["Inicio", "Pump", "Dump", "Recovery", "Lunares", "Infernal Rise", "Caída Final"],
-          datasets: [{
-            label: "Precio DEMONPENGU (simulado realista)",
-            data: datos,
-            borderColor: "red",
-            backgroundColor: "rgba(255,0,0,0.15)",
-            stepped: true,
-            borderWidth: 3,
-            fill: true,
-            tension: 0.1
-          }]
+    if (window.penguChartInstance) window.penguChartInstance.destroy();
+
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(255, 0, 0, 0.7)');
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0.2)');
+
+    window.penguChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ["Inicio", "Pump", "Dump", "Recovery", "Lunares", "Rise", "Fall", "Revenge"],
+        datasets: [{
+          label: "🔥 DEMONPENGU (x100k)",
+          data: datosEscalados,
+          borderColor: "rgba(255, 60, 60, 1)",
+          backgroundColor: gradient,
+          stepped: true,
+          borderWidth: 5,
+          pointRadius: 5,
+          pointHoverRadius: 8,
+          pointBackgroundColor: "#fff",
+          pointHoverBackgroundColor: "orange",
+          tension: 0.05,
+          fill: true,
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: {
+          duration: 2000,
+          easing: 'easeOutBounce'
         },
-        options: {
-          responsive: true,
-          plugins: { legend: { labels: { color: "#fff" } } },
-          scales: {
-            x: { ticks: { color: "#ccc" }, grid: { color: "#444" } },
-            y: { 
-              beginAtZero: false,
-              ticks: { color: "#ccc" },
-              grid: { color: "#444" }
+        plugins: {
+          legend: {
+            labels: { color: "#fff", font: { size: 14 } }
+          },
+          tooltip: {
+            backgroundColor: "#1a1a1a",
+            titleColor: "#ff4444",
+            bodyColor: "#fff",
+            callbacks: {
+              label: function(context) {
+                const original = context.raw / 100000;
+                return `Precio: $${original.toFixed(6)}`;
+              }
             }
           }
+        },
+        scales: {
+          x: {
+            ticks: { color: "#aaa", font: { size: 12 } },
+            grid: { color: "#333" }
+          },
+          y: {
+            beginAtZero: false,
+            ticks: {
+              color: "#ccc",
+              callback: function(value) {
+                return `$${(value / 100000).toFixed(4)}`;
+              }
+            },
+            grid: { color: "#333" }
+          }
         }
-      });
-    }
-  </script>
+      }
+    });
+  }
+</script>
 </body>
 </html>
 
